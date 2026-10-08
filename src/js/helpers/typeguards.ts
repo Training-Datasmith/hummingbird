@@ -5,7 +5,7 @@
 
 /* eslint-disable max-len */
 
-export const isHTMLElement = (element: EventTarget | null): element is HTMLElement => (element as HTMLElement).innerText !== undefined;
+export const isHTMLElement = (element: EventTarget | null): element is HTMLElement => element instanceof HTMLElement;
 
 export default {
   isHTMLElement,

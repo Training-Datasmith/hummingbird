@@ -17,13 +17,30 @@
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  */
 
-const getQueryParameters = (params: string) => params.split('&').map((str) => {
-  const [key, val] = str.split('=');
+const getQueryParameters = (params: string) => {
+  if (!params) {
+    return [];
+  }
 
-  return {
-    name: key,
-    value: decodeURIComponent(val).replace(/\+/g, ' '),
-  };
-});
+  return params.split('&').map((str) => {
+    const eqIndex = str.indexOf('=');
+
+    if (eqIndex === -1) {
+      return {
+        name: str,
+        value: '',
+      };
+    }
+
+    const key = str.slice(0, eqIndex);
+    const rawVal = str.slice(eqIndex + 1);
+    const value = decodeURIComponent(rawVal.replace(/\+/g, ' '));
+
+    return {
+      name: key,
+      value,
+    };
+  });
+};
 
 export default getQueryParameters;

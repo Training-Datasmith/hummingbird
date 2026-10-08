@@ -110,7 +110,7 @@ export const initSliders = () => {
         handle.setAttribute('tabindex', '0');
         const ariaLabel = unitCurrency
           ? `Adjust filter range in ${unitCurrency}`
-          : `Adjust filter range' in ${unitSymbol}`;
+          : `Adjust filter range in ${unitSymbol}`;
         handle.setAttribute('aria-label', ariaLabel);
       });
     } else {
@@ -135,7 +135,7 @@ export const initSliders = () => {
           unitPosition === 'suffix' ? `${value}${unitSymbol}` : `${unitSymbol}${value}`),
         );
 
-        const parentFacet = initiatedSlider.target.closest(Theme.selectors.facetedsearch.filterSlider) as HTMLElement;
+        const parentFacet = container.noUiSlider!.target.closest(Theme.selectors.facetedsearch.filterSlider) as HTMLElement;
         const showValues = parentFacet.querySelector(Theme.selectors.facetedsearch.rangeValues) as HTMLElement;
         showValues.innerHTML = formattedValues.join(' - ');
       });

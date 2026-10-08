@@ -4,6 +4,10 @@ import {
 } from '../constants/mocks/swapElements-data';
 
 describe('Helpers', () => {
+  afterEach(() => {
+    document.body.innerHTML = '';
+  });
+
   it('should swap children 1 with children 2', () => {
     document.body.innerHTML = `
       ${desktopElement}

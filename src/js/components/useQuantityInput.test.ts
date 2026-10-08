@@ -11,6 +11,10 @@ import EVENTS from '@js/constants/events-map';
 import useQuantityInput from './useQuantityInput';
 
 describe('useQuantityInput', () => {
+  beforeEach(() => {
+    window.fetch = jest.fn();
+  });
+
   describe('with update URL', () => {
     beforeAll(() => {
       resetHTMLBodyContent(Quantify.ProductLineTemplate);

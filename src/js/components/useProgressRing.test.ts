@@ -12,7 +12,7 @@ import useProgressRing from '@js/components/useProgressRing';
 
 describe('useProgressRing', () => {
   describe('with valid template', () => {
-    beforeAll(() => {
+    beforeEach(() => {
       resetHTMLBodyContent(ProgressRingMockData.Template);
       window.prestashop = {};
       initEmitter();
@@ -60,7 +60,7 @@ describe('useProgressRing', () => {
   });
 
   describe('without valid template', () => {
-    beforeAll(() => {
+    beforeEach(() => {
       window.prestashop = {};
       initEmitter();
     });

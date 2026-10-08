@@ -340,18 +340,16 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Delegated click: store the clicked button inside productQuantity wrapper
-  document.addEventListener('click', (e: KeyboardEvent) => {
+  document.addEventListener('click', (e: MouseEvent) => {
     const target = e.target as HTMLElement | null;
 
     if (!target) return;
 
-    // nearest button inside the product quantity wrapper
     const btn = target.closest(`${cartSelectorMap.productQuantity} button`) as HTMLElement | null;
 
-    if (btn && (e.key === ENTER_KEY || e.key === ' ' || e.code === 'Space')) {
-      // Set state.lastUpdateAction to track the last update action
+    if (btn) {
       state.set('lastUpdateAction', availableLastUpdateAction.UPDATE_PRODUCT_QUANTITY);
-      a11y.storeFocus();
+      a11y.setFocus(btn);
     }
   });
 

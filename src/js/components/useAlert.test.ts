@@ -9,8 +9,15 @@ import * as Alertify from '@constants/mocks/useAlert-data';
 
 describe('useAlert', () => {
   describe('wrapper functions', () => {
-    beforeAll(() => {
-      console.error = jest.fn();
+    let consoleErrorSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      document.body.innerHTML = '';
+      consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      consoleErrorSpy.mockRestore();
     });
 
     it('must returns false when useAlert failed to initialize', () => {
@@ -23,7 +30,7 @@ describe('useAlert', () => {
         remove: removeAlert,
       } = useAlert('');
 
-      expect(console.error).toHaveBeenCalledTimes(1);
+      expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
       expect(showAlert()).toBeFalsy();
       expect(hideAlert()).toBeFalsy();
       expect(disposeAlert()).toBeFalsy();
@@ -79,7 +86,7 @@ describe('useAlert', () => {
   });
 
   describe('with notifications container in the DOM', () => {
-    beforeAll(() => {
+    beforeEach(() => {
       resetHTMLBodyContent(Alertify.NotificationsContainer);
     });
 

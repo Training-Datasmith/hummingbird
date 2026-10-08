@@ -6,7 +6,7 @@ import {
   desktopElement, mobileElement, mobileElementId, contentValue, desktopElementId,
 } from './constants/mocks/swapElements-data';
 
-beforeAll(() => {
+beforeEach(() => {
   document.body.innerHTML = `
     ${desktopElement}
     ${mobileElement}

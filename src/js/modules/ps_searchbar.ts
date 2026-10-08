@@ -123,7 +123,7 @@ const initSearchbar = () => {
             productLink.href = product.canonical_url;
             productLink.id = `result_product_option_${product.id_product.toString()}`;
             productLink.setAttribute('aria-label', product.name);
-            productTitle.innerHTML = product.name;
+            productTitle.textContent = product.name;
 
             if (product.cover) {
               productImage.src = product.cover.small.url;
@@ -254,6 +254,58 @@ const initSearchbar = () => {
 
     searchClear?.addEventListener('blur', handleBlur);
 
+    const runDebouncedSearch = debounce(async () => {
+      if (!searchUrl) return;
+
+      const products = await searchProduct(searchUrl, searchInput.value, 10);
+
+      if (products.length > 0) {
+        renderSearchResults(products);
+        searchClear?.classList.remove('d-none');
+        searchClear?.setAttribute('tabindex', '0');
+        searchDropdown?.classList.remove('d-none');
+        currentResultIndex = -1;
+
+        searchInput.setAttribute('aria-expanded', 'true');
+
+        const resultLinks = searchResults.querySelectorAll<HTMLAnchorElement>(SearchBarMap.searchResultLink);
+        resultLinks.forEach((link) => {
+          link.setAttribute('role', 'option');
+          link.setAttribute('aria-selected', 'false');
+          link.setAttribute('tabindex', '-1');
+          link.addEventListener('keydown', handleKeyboardNavigation);
+
+          link.addEventListener('focus', () => {
+            searchWidgetHasFocus = true;
+            if (blurTimeout) {
+              clearTimeout(blurTimeout);
+              blurTimeout = null;
+            }
+          });
+
+          link.addEventListener('blur', handleBlur);
+        });
+      } else {
+        searchResults.innerHTML = '';
+        searchDropdown.classList.add('d-none');
+        searchInput.setAttribute('aria-expanded', 'false');
+        currentResultIndex = -1;
+      }
+    }, 250);
+
+    const handleOutsideClick = (event: Event) => {
+      const target = event.target as Node;
+
+      if (!searchWidget.contains(target) && !searchDropdown.contains(target)) {
+        searchDropdown.classList.add('d-none');
+        searchInput.setAttribute('aria-expanded', 'false');
+        currentResultIndex = -1;
+        searchWidgetHasFocus = false;
+      }
+    };
+
+    window.addEventListener('click', handleOutsideClick);
+
     // Handle Tab navigation from search input to clear button
     searchInput.addEventListener('keydown', (e: KeyboardEvent) => {
       // Handle Tab key specifically for navigation to clear button
@@ -282,63 +334,7 @@ const initSearchbar = () => {
         return;
       }
 
-      // Debounce search functionality for typing
-      debounce(async () => {
-        if (!searchUrl) return;
-
-        const products = await searchProduct(searchUrl, searchInput.value, 10);
-
-        if (products.length > 0) {
-          renderSearchResults(products);
-          searchClear?.classList.remove('d-none');
-          // Make clear button tabbable when search results are shown
-          searchClear?.setAttribute('tabindex', '0');
-          searchDropdown?.classList.remove('d-none');
-          currentResultIndex = -1; // Reset navigation index
-
-          // Update ARIA expanded state
-          searchInput.setAttribute('aria-expanded', 'true');
-
-          // Add keyboard navigation to result links and make them non-tabbable
-          const resultLinks = searchResults.querySelectorAll<HTMLAnchorElement>(SearchBarMap.searchResultLink);
-          resultLinks.forEach((link) => {
-            link.setAttribute('role', 'option');
-            link.setAttribute('aria-selected', 'false');
-            link.setAttribute('tabindex', '-1'); // Remove from tab order - only accessible via arrows
-            link.addEventListener('keydown', handleKeyboardNavigation);
-
-            // Add focus/blur handlers to maintain search widget focus state
-            link.addEventListener('focus', () => {
-              searchWidgetHasFocus = true;
-              // Clear any pending blur timeout
-              if (blurTimeout) {
-                clearTimeout(blurTimeout);
-                blurTimeout = null;
-              }
-            });
-
-            link.addEventListener('blur', handleBlur);
-          });
-
-          // Close dropdown when clicking outside
-          window.addEventListener('click', (event: Event) => {
-            const target = <Node>event.target;
-
-            // Check if click is outside both the search widget and the dropdown
-            if (!searchWidget.contains(target) && !searchDropdown.contains(target)) {
-              searchDropdown.classList.add('d-none');
-              searchInput.setAttribute('aria-expanded', 'false');
-              currentResultIndex = -1;
-              searchWidgetHasFocus = false;
-            }
-          });
-        } else {
-          searchResults.innerHTML = '';
-          searchDropdown.classList.add('d-none');
-          searchInput.setAttribute('aria-expanded', 'false');
-          currentResultIndex = -1;
-        }
-      }, 250)();
+      runDebouncedSearch();
     });
   }
 };
