@@ -22,6 +22,7 @@ describe('useQuantityInput cart focus delegation', () => {
       </div>
     `;
     const btn = document.getElementById('qty-up') as HTMLButtonElement;
+    btn.focus();
     btn.dispatchEvent(new MouseEvent('click', {bubbles: true}));
 
     expect(state.get('lastUpdateAction')).toBe(availableLastUpdateAction.UPDATE_PRODUCT_QUANTITY);

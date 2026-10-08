@@ -349,7 +349,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (btn) {
       state.set('lastUpdateAction', availableLastUpdateAction.UPDATE_PRODUCT_QUANTITY);
-      a11y.setFocus(btn);
+      a11y.storeFocus();
     }
   });
 
