@@ -50,6 +50,7 @@ describe('initCheckout', () => {
   });
 
   it('sets data-active on the selected carrier wrapper only', () => {
+    document.getElementById('carrier-a')?.setAttribute('data-active', '');
     const option = document.createElement('div');
     option.innerHTML = '<div class="js-carrier-extra" id="carrier-selected"></div>';
     window.prestashop.emit(EVENTS.updatedDeliveryForm, {deliveryOption: [option]});

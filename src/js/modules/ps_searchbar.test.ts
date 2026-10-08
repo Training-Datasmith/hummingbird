@@ -27,6 +27,7 @@ describe('initSearchbar', () => {
   beforeEach(() => {
     setupThemeWindow();
     jest.useFakeTimers();
+    (searchProduct as jest.Mock).mockClear();
   });
 
   it('debounces search requests', async () => {

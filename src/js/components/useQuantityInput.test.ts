@@ -10,21 +10,22 @@ import * as Quantify from '@constants/mocks/useQuantityInput-data';
 import EVENTS from '@js/constants/events-map';
 import useQuantityInput from './useQuantityInput';
 
-describe('useQuantityInput', () => {
-  beforeEach(() => {
-    window.fetch = jest.fn();
-  });
+const initQuantityInputWithUpdateUrl = () => {
+  resetHTMLBodyContent(Quantify.ProductLineTemplate);
+  window.prestashop = {};
+  window.Theme = {
+    ...window.Theme,
+    events: EVENTS,
+  };
+  initEmitter();
+  useQuantityInput(selectorsMap.qtyInput.default, Quantify.delay);
+};
 
+describe('useQuantityInput', () => {
   describe('with update URL', () => {
-    beforeAll(() => {
-      resetHTMLBodyContent(Quantify.ProductLineTemplate);
-      window.prestashop = {};
-      window.Theme = {
-        ...window.Theme,
-        events: EVENTS,
-      };
-      initEmitter();
-      useQuantityInput(selectorsMap.qtyInput.default, Quantify.delay);
+    beforeEach(() => {
+      initQuantityInputWithUpdateUrl();
+      window.fetch = jest.fn();
     });
 
     it('should display error with NOK response', async () => {
@@ -100,6 +101,7 @@ describe('useQuantityInput', () => {
 
     it('should display confirmation buttons on keyup', () => {
       const qtyInput = getHTMLElement<HTMLInputElement>('input');
+      resetQtyInputValueInDOM(qtyInput, '1', '2');
       qtyInput.value = '1';
       qtyInput.dispatchEvent(new Event('keyup'));
 
@@ -115,6 +117,9 @@ describe('useQuantityInput', () => {
 
     it('should hide confirmation buttons on decrement', async () => {
       const qtyInput = getHTMLElement<HTMLInputElement>('input');
+      resetQtyInputValueInDOM(qtyInput, '1', '2');
+      qtyInput.value = '1';
+      qtyInput.dispatchEvent(new Event('keyup'));
       qtyInput.dispatchEvent(new Event('keydown'));
 
       const decrementButton = getHTMLElement<HTMLButtonElement>(selectorsMap.qtyInput.decrement);
@@ -157,11 +162,12 @@ describe('useQuantityInput', () => {
   });
 
   describe('without update URL', () => {
-    beforeAll(() => {
+    beforeEach(() => {
       resetHTMLBodyContent(Quantify.ProductTemplate);
       window.prestashop = {};
       initEmitter();
       useQuantityInput(selectorsMap.qtyInput.modal, Quantify.delay);
+      window.fetch = jest.fn();
     });
 
     it('should update value on increment/decrement without POST request', () => {
